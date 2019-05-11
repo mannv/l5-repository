@@ -58,12 +58,15 @@ class CleanCacheRepository
                 $this->repository = $event->getRepository();
                 $this->model = $event->getModel();
                 $this->action = $event->getAction();
+                app('log')->debug('Action: ' . $this->action);
+                $arr = explode('\\', get_class($this->repository));
 
                 if (config("repository.cache.clean.on.{$this->action}", true)) {
-                    $cacheKeys = CacheKeys::getKeys(get_class($this->repository));
-
+                    $cacheKeys = CacheKeys::getKeys(array_pop($arr));
+                    
                     if (is_array($cacheKeys)) {
                         foreach ($cacheKeys as $key) {
+                            app('log')->debug('remove: ' . $key);
                             $this->cache->forget($key);
                         }
                     }

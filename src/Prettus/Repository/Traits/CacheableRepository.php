@@ -124,9 +124,12 @@ trait CacheableRepository
         $request = app('Illuminate\Http\Request');
         $args = serialize($args);
         $criteria = $this->serializeCriteria();
-        $key = sprintf('%s@%s-%s', get_called_class(), $method, md5($args . $criteria . $request->fullUrl()));
+        $class = get_called_class();
+        $arr = explode('\\', $class);
+        $cacheKey = array_pop($arr);
+        $key = sprintf('%s@%s-%s', $cacheKey, $method, md5($args . $criteria . $request->fullUrl()));
 
-        CacheKeys::putKey(get_called_class(), $key);
+        CacheKeys::putKey($cacheKey, $key);
 
         return $key;
 
