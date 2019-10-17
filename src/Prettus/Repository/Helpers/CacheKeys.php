@@ -2,6 +2,9 @@
 
 namespace Prettus\Repository\Helpers;
 
+use Dingo\Api\Facade\Route;
+use Mpdf\Cache;
+
 /**
  * Class CacheKeys
  * @package Prettus\Repository\Helpers
@@ -13,7 +16,7 @@ class CacheKeys
     /**
      * @var string
      */
-    protected static $storeFile = "repository-cache-keys.json";
+    protected static $storeFile = "repository-cache-keys";
 
     /**
      * @var array
@@ -50,11 +53,7 @@ class CacheKeys
 
         $file = self::getFileKeys();
 
-        if (!file_exists($file)) {
-            self::storeKeys();
-        }
-
-        $content = file_get_contents($file);
+        $content = \Cache::get($file);
         self::$keys = json_decode($content, true);
 
         return self::$keys;
@@ -65,7 +64,7 @@ class CacheKeys
      */
     public static function getFileKeys()
     {
-        $file = storage_path("framework/cache/" . self::$storeFile);
+        $file = self::$storeFile;
 
         return $file;
     }
@@ -78,8 +77,7 @@ class CacheKeys
         $file = self::getFileKeys();
         self::$keys = is_null(self::$keys) ? [] : self::$keys;
         $content = json_encode(self::$keys);
-
-        return file_put_contents($file, $content);
+        \Cache::set($file, $content);
     }
 
     /**
@@ -91,7 +89,6 @@ class CacheKeys
     {
         self::loadKeys();
         self::$keys[$group] = isset(self::$keys[$group]) ? self::$keys[$group] : [];
-
         return self::$keys[$group];
     }
 

@@ -63,7 +63,7 @@ class CleanCacheRepository
 
                 if (config("repository.cache.clean.on.{$this->action}", true)) {
                     $cacheKeys = CacheKeys::getKeys(array_pop($arr));
-                    
+
                     if (is_array($cacheKeys)) {
                         foreach ($cacheKeys as $key) {
                             app('log')->debug('remove: ' . $key);
